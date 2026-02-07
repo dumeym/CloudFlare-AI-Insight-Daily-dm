@@ -17,6 +17,9 @@ jobs:
 
       - name: 测试 RSS 数据提取和卡片生成
         env:
+          # 测试模式（不实际发送到微信）
+          DRY_RUN: 'true'
+
           # DeepSeek API 配置
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           DEEPSEEK_API_URL: ${{ secrets.DEEPSEEK_API_URL }}
