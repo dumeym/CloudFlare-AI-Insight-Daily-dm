@@ -1,13 +1,10 @@
-name: AI Daily WeChat Notification (RSS)
+name: Test Real Push
 
 on:
-  schedule:
-    # 每天早上 09:30 (北京时间 = UTC+8，所以是 01:30 UTC)
-    - cron: '30 1 * * *'
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:  # 只允许手动触发
 
 jobs:
-  daily-notify:
+  test-real-push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -18,14 +15,14 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 运行每日推送（RSS 版本）
+      - name: 测试真实推送（发送到大群）
         env:
-          # 生产模式（不设置 DRY_RUN，表示实际推送）
-          # DRY_RUN: 'true'  # 如果要测试，取消注释这一行
+          # 真实推送模式（不设置 DRY_RUN，表示实际发送到企业微信）
+          # ⚠️ 这条消息会发送到企业微信群
 
           # DeepSeek API 配置
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          DEEPSEEK_API_URL: ${{ secrets.DEPSEEK_API_URL }}
+          DEEPSEEK_API_URL: ${{ secrets.DEEPSEEK_API_URL }}
 
           # 企业微信 Webhook 配置
           WECHAT_WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
@@ -33,6 +30,8 @@ jobs:
           # 其他必要配置
           NODE_ENV: production
         run: |
-          echo "开始推送 AI 每日简讯..."
+          echo "⚠️ 警告：这将发送真实消息到企业微信群！"
+          echo "5秒后开始执行..."
+          sleep 5
           node scripts/daily-notify-rss.js
-          echo "推送完成"
+          echo "✅ 推送完成"

@@ -71,34 +71,40 @@ function extractLatestItem(rssText) {
   try {
     // 查找第一个 <item> 标签
     const itemMatch = rssText.match(/<item>[\s\S]*?<\/item>/i);
-    
+
     if (!itemMatch) {
       throw new Error('未找到 <item> 标签');
     }
-    
+
     const itemContent = itemMatch[0];
-    
+
     // 提取标题
     const titleMatch = itemContent.match(/<title>([\s\S]*?)<\/title>/i);
-    const title = titleMatch ? titleMatch[1].trim() : '未知标题';
-    
+    let title = titleMatch ? titleMatch[1].trim() : '未知标题';
+
+    // 解码 HTML 实体和 CDATA
+    title = title.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '');
+    title = title.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    title = title.replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+    title = title.replace(/&#39;/g, "'");
+
     // 提取内容（可能是 <description> 或 <content:encoded>）
     let contentMatch = itemContent.match(/<content:encoded>([\s\S]*?)<\/content:encoded>/i);
     if (!contentMatch) {
       contentMatch = itemContent.match(/<description>([\s\S]*?)<\/description>/i);
     }
-    
+
     let content = contentMatch ? contentMatch[1] : '';
-    
+
     // 解码 HTML 实体和 CDATA
     content = content.replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '');
     content = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     content = content.replace(/&amp;/g, '&').replace(/&quot;/g, '"');
     content = content.replace(/&#39;/g, "'");
-    
+
     console.log(`✓ 提取到最新条目: ${title}`);
     console.log(`✓ 内容长度: ${content.length} 字符`);
-    
+
     return {
       title,
       content,
@@ -107,6 +113,31 @@ function extractLatestItem(rssText) {
   } catch (error) {
     console.error(`❌ 提取 item 内容失败: ${error.message}`);
     throw error;
+  }
+}
+
+/**
+ * 从 RSS 标题中提取日期
+ * @param {string} title - RSS 标题，例如 "2026-02-06日刊"
+ * @returns {Date} 日期对象
+ */
+function extractDateFromTitle(title) {
+  try {
+    // 匹配日期格式：YYYY-MM-DD
+    const dateMatch = title.match(/(\d{4})-(\d{2})-(\d{2})/);
+    if (dateMatch) {
+      const [, year, month, day] = dateMatch;
+      return new Date(`${year}-${month}-${day}T00:00:00Z`);
+    }
+    // 如果没有匹配到，返回前一天
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return yesterday;
+  } catch (error) {
+    console.warn(`⚠️ 无法从标题提取日期，使用前一天: ${title}`);
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return yesterday;
   }
 }
 
@@ -191,21 +222,24 @@ ${content}`;
 /**
  * 构建企业微信模板卡片
  */
-function buildWeChatCard(data) {
-  const today = new Date().toISOString().split('T')[0];
-  const year = today.substring(0, 4);
-  const month = today.substring(5, 7);
-  const day = today.substring(8, 10);
-  
+function buildWeChatCard(data, rssTitle) {
+  // 从 RSS 标题中提取日期
+  const articleDate = extractDateFromTitle(rssTitle);
+  const year = articleDate.getFullYear();
+  const month = String(articleDate.getMonth() + 1).padStart(2, '0');
+  const day = String(articleDate.getDate()).padStart(2, '0');
+
+  console.log(`✓ 使用 RSS 日期: ${year}-${month}-${day} (标题: ${rssTitle})`);
+
   // 限制新闻数量为 5 条
   const news = data.news.slice(0, 5);
-  
+
   // 构建横向内容列表
   const horizontal_content_list = news.map((item, index) => ({
     title: `${index + 1}. ${item.title}`,
     desc: item.category || 'AI资讯'
   }));
-  
+
   // 构建跳转列表
   const jump_list = news
     .filter(item => item.url && item.url.startsWith('http'))
@@ -215,7 +249,7 @@ function buildWeChatCard(data) {
       title: `查看: ${item.title.substring(0, 10)}`
     }))
     .slice(0, 5);
-  
+
   const card = {
     card_type: 'text_notice',
     source: {
@@ -234,7 +268,7 @@ function buildWeChatCard(data) {
       url: 'https://github.com/dumeym/CloudFlare-AI-Insight-Daily-dm'
     }
   };
-  
+
   return card;
 }
 
@@ -263,9 +297,9 @@ async function main() {
     
     // 步骤 3: 使用 DeepSeek 处理
     const processedData = await generateCardFromRSS(item.content);
-    
+
     // 步骤 4: 构建卡片
-    const card = buildWeChatCard(processedData);
+    const card = buildWeChatCard(processedData, item.title);
     
     console.log('\n步骤 3: 构建企业微信卡片...');
     console.log('✓ 卡片构建完成');
