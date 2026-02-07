@@ -235,10 +235,14 @@ function buildWeChatCard(data, rssTitle) {
   const news = data.news.slice(0, 5);
 
   // 构建横向内容列表
-  const horizontal_content_list = news.map((item, index) => ({
-    title: `${index + 1}. ${item.title}`,
-    desc: item.category || 'AI资讯'
-  }));
+  const horizontal_content_list = news.map((item, index) => {
+    // 截取标题前4个字作为 keyname
+    const keyname = item.category ? item.category.substring(0, 4) : 'AI资讯';
+    return {
+      keyname: keyname,
+      value: item.title
+    };
+  });
 
   // 构建跳转列表
   const jump_list = news
