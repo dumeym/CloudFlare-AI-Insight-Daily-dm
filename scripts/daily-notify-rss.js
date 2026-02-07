@@ -1,5 +1,45 @@
 import { callDeepSeekAPI } from '../src/chatapi.js';
-import { sendWeChatNotification } from '../src/wechat.js';
+
+// 企业微信 Webhook URL
+const WECHAT_WEBHOOK_URL = process.env.WECHAT_WEBHOOK_URL;
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
+const DEEPSEEK_API_URL = process.env.DEEPSEEK_API_URL || 'https://api.deepseek.com';
+
+/**
+ * 发送企业微信模板卡片
+ * @param {object} card - 卡片数据
+ */
+async function sendWeChatNotification(card) {
+  if (!WECHAT_WEBHOOK_URL) {
+    throw new Error('WECHAT_WEBHOOK_URL 环境变量未设置');
+  }
+
+  const payload = {
+    msgtype: 'template_card',
+    template_card: card
+  };
+
+  try {
+    const response = await fetch(WECHAT_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`企业微信推送失败 (${response.status}): ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('发送到企业微信失败:', error);
+    throw error;
+  }
+}
 
 /**
  * 获取 RSS 数据
@@ -75,8 +115,8 @@ function extractLatestItem(rssText) {
  */
 async function generateCardFromRSS(content) {
   console.log('\n步骤 2: 使用 DeepSeek 处理 RSS 内容...');
-  
-  const prompt = `你是一个专业的AI资讯处理助手。请分析以下 AI 日报内容，并按照要求输出。
+
+  const systemPrompt = `你是一个专业的AI资讯处理助手。请分析以下 AI 日报内容，并按照要求输出。
 
 【要求】
 1. 必须过滤掉所有推广信息，包括但不限于：
@@ -109,16 +149,21 @@ async function generateCardFromRSS(content) {
     }
   ]
 }
-\`\`\`
+\`\`\``;
 
-【RSS 内容】
+  const userPrompt = `【RSS 内容】
 ${content}`;
 
+  const env = {
+    DEEPSEEK_API_KEY,
+    DEEPSEEK_API_URL
+  };
+
   try {
-    const result = await callDeepSeekAPI(prompt, 'gpt-4o-mini', 2000);
-    
+    const result = await callDeepSeekAPI(env, userPrompt, systemPrompt);
+
     console.log(`✓ DeepSeek 处理完成`);
-    
+
     // 尝试提取 JSON
     const jsonMatch = result.match(/```json\s*([\s\S]*?)\s*```/i);
     if (jsonMatch) {
@@ -127,7 +172,7 @@ ${content}`;
       console.log(`✓ 提取到 ${parsed.news.length} 条新闻`);
       return parsed;
     }
-    
+
     // 如果没有 markdown 代码块，尝试直接解析
     try {
       const parsed = JSON.parse(result.trim());
