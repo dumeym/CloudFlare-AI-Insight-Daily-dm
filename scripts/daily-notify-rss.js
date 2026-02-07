@@ -201,13 +201,13 @@ function buildWeChatCard(data) {
   const news = data.news.slice(0, 5);
   
   // 构建横向内容列表
-  const horizontalContentList = news.map((item, index) => ({
+  const horizontal_content_list = news.map((item, index) => ({
     title: `${index + 1}. ${item.title}`,
     desc: item.category || 'AI资讯'
   }));
   
   // 构建跳转列表
-  const jumpList = news
+  const jump_list = news
     .filter(item => item.url && item.url.startsWith('http'))
     .map(item => ({
       type: 1,
