@@ -1,3 +1,75 @@
+/**
+ * Calls DeepSeek API (non-streaming).
+ *
+ * @param {object} env - Environment object containing DEEPSEEK_API_KEY.
+ * @param {string} promptText - The user's prompt.
+ * @param {string | null} [systemPromptText=null] - Optional system prompt text.
+ * @returns {Promise<string>} The generated text content.
+ * @throws {Error} If DEEPSEEK_API_KEY is not set, or if API call fails.
+ */
+async function callDeepSeekAPI(env, promptText, systemPromptText = null) {
+    if (!env.DEEPSEEK_API_KEY) {
+        throw new Error("DEEPSEEK_API_KEY environment variable is not set.");
+    }
+
+    const apiUrl = env.DEEPSEEK_API_URL || 'https://api.deepseek.com';
+    const url = `${apiUrl}/v1/chat/completions`;
+
+    const messages = [];
+    if (systemPromptText && typeof systemPromptText === 'string' && systemPromptText.trim() !== '') {
+        messages.push({ role: "system", content: systemPromptText });
+        console.log("System instruction included in DeepSeek API call.");
+    }
+    messages.push({ role: "user", content: promptText });
+
+    const payload = {
+        model: "deepseek-chat",
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 500
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${env.DEEPSEEK_API_KEY}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorBodyText = await response.text();
+            let errorData;
+            try {
+                errorData = JSON.parse(errorBodyText);
+            } catch (e) {
+                errorData = errorBodyText;
+            }
+            console.error("DeepSeek API Error Response Body:", typeof errorData === 'object' ? JSON.stringify(errorData, null, 2) : errorData);
+            const message = typeof errorData === 'object' && errorData.error?.message
+                ? errorData.error.message
+                : (typeof errorData === 'string' ? errorData : 'Unknown DeepSeek API error');
+            throw new Error(`DeepSeek API error (${response.status}): ${message}`);
+        }
+
+        const data = await response.json();
+
+        if (data.choices && data.choices.length > 0 && data.choices[0].message && data.choices[0].message.content) {
+            return data.choices[0].message.content;
+        } else {
+            console.warn("DeepSeek API response format unexpected: No choices or content found.", JSON.stringify(data, null, 2));
+            throw new Error("DeepSeek API returned an empty or malformed response.");
+        }
+    } catch (error) {
+        if (!(error instanceof Error && error.message.startsWith("DeepSeek"))) {
+            console.error("Error calling DeepSeek API (Non-streaming):", error);
+        }
+        throw error;
+    }
+}
+
 // src/chatapi.js
 
 /**

@@ -1,0 +1,23 @@
+{
+  "name": "ai-daily-wechat-notification",
+  "version": "1.0.0",
+  "description": "企业微信群 AI 每日简讯推送系统",
+  "type": "module",
+  "scripts": {
+    "notify": "node scripts/daily-notify.js"
+  },
+  "keywords": [
+    "ai",
+    "wechat",
+    "notification",
+    "deepseek",
+    "daily-summary"
+  ],
+  "author": "dumeym",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

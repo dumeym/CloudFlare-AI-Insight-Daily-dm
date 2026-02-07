@@ -1,0 +1,36 @@
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 日志
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+
+# 敏感信息
+*api-key*.md
+*apikey*.md
+*api-key*.txt
+*apikey*.txt
+webhook-url*.md
+webhook-url*.txt
+
+# Node modules
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
