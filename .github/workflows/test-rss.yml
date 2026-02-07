@@ -1,0 +1,30 @@
+name: Test RSS Card (Dry Run)
+
+on:
+  workflow_dispatch:  # 只允许手动触发
+
+jobs:
+  test-rss:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 测试 RSS 数据提取和卡片生成
+        env:
+          # DeepSeek API 配置
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_API_URL: ${{ secrets.DEEPSEEK_API_URL }}
+
+          # 企业微信 Webhook 配置（测试模式不需要）
+          WECHAT_WEBHOOK_URL: ''
+
+          # 其他必要配置
+          NODE_ENV: production
+        run: |
+          node scripts/daily-notify-rss.js
