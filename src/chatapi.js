@@ -672,3 +672,6 @@ async function fetchWithTimeout(resource, options = {}, timeout = 180000) {
     clearTimeout(id);
   }
 }
+
+// 导出所有需要的函数
+export { callDeepSeekAPI };
