@@ -269,7 +269,7 @@ function buildWeChatCard(data, rssTitle) {
     jump_list,
     card_action: {
       type: 1,
-      url: 'https://github.com/dumeym/CloudFlare-AI-Insight-Daily-dm'
+      url: 'https://github.com/dumeym/AI-insight-daily-dm'
     }
   };
 

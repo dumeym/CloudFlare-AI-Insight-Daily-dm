@@ -172,7 +172,7 @@ function buildTemplateCard(summary, dailyData) {
     jump_list: [
       {
         type: 1,
-        url: 'https://github.com/dumeym/CloudFlare-AI-Insight-Daily-dm',
+        url: 'https://github.com/dumeym/AI-insight-daily-dm',
         title: '查看全部'
       }
     ],
@@ -180,7 +180,7 @@ function buildTemplateCard(summary, dailyData) {
     // 整体卡片的点击跳转事件
     card_action: {
       type: 1,
-      url: 'https://github.com/dumeym/CloudFlare-AI-Insight-Daily-dm'
+      url: 'https://github.com/dumeym/AI-insight-daily-dm'
     }
   };
 

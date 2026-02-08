@@ -202,7 +202,7 @@ output/today.json
 
 **使用 GitHub Actions Cron**
 
-* GitHub 仓库：`https://github.com/dumeym/CloudFlare-AI-Insight-Daily-dm.git`
+* GitHub 仓库：`https://github.com/dumeym/AI-insight-daily-dm.git`
 * 触发方式：GitHub Actions 定时任务
 * 环境变量管理：GitHub Secrets
 

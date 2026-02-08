@@ -86,7 +86,7 @@ git push origin main
 
 ### 步骤 3: 配置 GitHub Secrets
 
-**GitHub 仓库地址**: `https://github.com/dumeym/CloudFlare-AI-Insight-Daily-dm`
+**GitHub 仓库地址**: `https://github.com/dumeym/AI-insight-daily-dm`
 
 **需要添加的 Secrets**:
 

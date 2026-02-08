@@ -1,2 +1,2 @@
 # this is the git repo address:
-https://github.com/dumeym/CloudFlare-AI-Insight-Daily-dm.git
+https://github.com/dumeym/AI-insight-daily-dm.git

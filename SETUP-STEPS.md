@@ -43,7 +43,7 @@ git push origin main
 
 ### 步骤 2: 配置 GitHub Secrets
 
-访问你的 GitHub 仓库：`https://github.com/dumeym/CloudFlare-AI-Insight-Daily-dm`
+访问你的 GitHub 仓库：`https://github.com/dumeym/AI-insight-daily-dm`
 
 进入 `Settings` → `Secrets and variables` → `Actions`，点击 `New repository secret`，添加以下 3 个 Secrets：
 
