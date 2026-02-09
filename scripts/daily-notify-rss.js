@@ -262,6 +262,11 @@ function buildWeChatCard(data, rssTitle) {
             desc: '同济院每日AI行业动态精选'
         },
         sub_title_text: newsList,
+        quote_area: {
+            type: 0,
+            title: '反馈',
+            quote_text: '如有意见请@杜明修改'
+        },
         jump_list,
         card_action: {
             type: 1,
