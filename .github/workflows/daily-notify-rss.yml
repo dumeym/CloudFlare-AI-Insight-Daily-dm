@@ -25,7 +25,7 @@ jobs:
 
           # DeepSeek API 配置
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          DEEPSEEK_API_URL: ${{ secrets.DEPSEEK_API_URL }}
+          DEEPSEEK_API_URL: ${{ secrets.DEEPSEEK_API_URL }}
 
           # 企业微信 Webhook 配置
           WECHAT_WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
