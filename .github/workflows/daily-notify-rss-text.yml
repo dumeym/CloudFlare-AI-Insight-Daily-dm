@@ -1,9 +1,9 @@
-name: AI Daily WeChat Notification (RSS)
+name: AI Daily WeChat Notification (RSS - Text)
 
 on:
-  # schedule:
-  #   # 每天早上 08:00 (北京时间 = UTC+8，所以是 00:00 UTC)
-  #   - cron: '0 0 * * *'
+  schedule:
+    # 每天早上 08:00 (北京时间 = UTC+8，所以是 00:00 UTC)
+    - cron: '0 0 * * *'
   workflow_dispatch:  # 允许手动触发
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 运行每日推送（RSS 版本）
+      - name: 运行每日推送（RSS 版本 - 文本消息）
         env:
           # 生产模式（不设置 DRY_RUN，表示实际推送）
           # DRY_RUN: 'true'  # 如果要测试，取消注释这一行
@@ -34,5 +34,5 @@ jobs:
           NODE_ENV: production
         run: |
           echo "开始推送 AI 每日简讯..."
-          node scripts/daily-notify-rss.js
+          node scripts/daily-notify-rss-text.js
           echo "推送完成"
