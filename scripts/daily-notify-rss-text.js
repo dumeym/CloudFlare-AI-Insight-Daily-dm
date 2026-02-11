@@ -168,11 +168,11 @@ async function generateNewsFromRSS(content) {
 
 3. 按照以下格式输出（不要添加任何其他文字）：
 
-分类1：新闻完整内容
-分类2：新闻完整内容
-分类3：新闻完整内容
-分类4：新闻完整内容
-分类5：新闻完整内容
+【分类1】：新闻完整内容
+【分类2】：新闻完整内容
+【分类3】：新闻完整内容
+【分类4】：新闻完整内容
+【分类5】：新闻完整内容
 
 4. 确保每条新闻的内容完整，不要因为字数限制而截断。`;
 
@@ -210,13 +210,13 @@ function buildWeChatText(newsContent, rssTitle) {
 
     // 构建文本消息
     const text = `${year}年${month}月${day}日AI简讯
-同济院每日AI行业动态精选
+<TJAD每日AI行业动态精选>
 
 ${newsContent}
 
-如有意见请@杜明修改
+*如有意见请本群@杜明修改*
 
-查看全部：https://github.com/dumeym/AI-insight-daily-dm`;
+`;
 
     return text;
 }
